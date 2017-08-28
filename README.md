@@ -77,7 +77,10 @@ config = ConfigHound.load("config.yml", :include_key => "defaults")
 
 ## Reference expansion
 
-ConfigHound can expand references of the form `<(X.Y.Z)>` in config values, which can help DRY up configuration, e.g.
+ConfigHound can expand references in config values, which can help DRY up configuration.
+
+There are two options for expansion:
+references in the form `<(X.Y.Z)>` expand to values defined elsewhere in the config files, e.g.
 
 ```yaml
 name: myapp
@@ -85,6 +88,21 @@ aws:
   region: us-west-1
 log:
   stream: <(name)>-logs-<(aws.region)>
+```
+
+References in the form `<*(X.Y.Z)>` expand lists of values,
+adding elements defined elsewhere in the config files, e.g.
+
+```yaml
+base:
+  security:
+  - ACCESS_KEY_ID
+  - SESSION_TOKEN
+environment:
+- <*(base.security)>
+- DB_HOST
+- DB_USERNAME
+- DB_PASSWORD
 ```
 
 Enable reference expansion with the `:expand_refs` option.
